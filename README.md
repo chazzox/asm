@@ -21,7 +21,9 @@ change this link to the directory of where you have installed picaxe6, as far as
 
 if it returns no erros then follow the follwoing instructions to get to work
 
-```fuck off im still doing the damn project```
+```
+fuck off im still doing the damn project
+```
 
 
 
