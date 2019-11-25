@@ -1,9 +1,4 @@
 init:
-	; variables to be defined: cblock h'20'
-	; variables to be defined: delay_1		
-	; variables to be defined: delay_2		
-	; variables to be defined: what_button	
-
 	bsf STATUS, RP0 			;	selects bank 1 (this is so we can config our in/out pins)
 	what_button equ b1
 	movlw b'00000000' 			;	set PORTB all outputs (A '0' means output, A '1' means input. We can set each
