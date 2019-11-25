@@ -27,7 +27,7 @@ fuck off im still doing the damn project
 
 
 
-### peasent version
+### peasant version
 
 * open picaxe6 editor
 * open the .bas file in the editor
