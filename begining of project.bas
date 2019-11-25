@@ -1,4 +1,3 @@
-
 init:
 	; variables to be defined: cblock h'20'
 	; variables to be defined: delay_1		
@@ -39,7 +38,6 @@ init:
 
 begin:
 	call check_keypad			;	call the check_keypad sub-routine and then return
-	; 
 	call display_digit			;	call the display_digit routine and then return
 	goto begin					;	go back to the beginning and do it all again.
 
@@ -98,3 +96,4 @@ return		; returns to the sub that initially called display_digit
 
 
 end				; all things must come to an end, including this program
+
