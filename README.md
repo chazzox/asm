@@ -40,6 +40,9 @@ if that doesn't work, google can be ur friend
 *to be written*
 
 
+### other
+probably gonna write a vscode running thingy for this so you might not have to copy paste the thingy in to the thingy for much longer lmao :pog_champ: amiright
+
 
 ## Acknowledgments
 
