@@ -6,11 +6,13 @@ init:
 	movlw b'11111000' 			;	set PORTA pins 0, 1, and 2 outputs. pins 3, 4, 5, 6 and 7 inputs
 	movwf TRISA 				;	remember PORTA pin 5 cannot be an input.
 	bcf STATUS, RP0 			;	select bank 0
-	
-	
 	clrf what_button
 	clrf PORTA
-	goto begin					;	Now skip straight to setup.
+
+begin:
+	call check_keypad			;	call the check_keypad sub-routine and then return
+	call display_digit			;	call the display_digit routine and then return
+	goto begin					;	go back to the beginning and do it all again.
 
 ; logic is to be replaced
 ;digit_data:						; this stores the va;ues of each 
@@ -30,12 +32,16 @@ init:
 	; retlw b'11010010'			;	this is the data for *
 	; retlw b'10101101'			;	this is the data for #
 
-
-begin:
-	call check_keypad			;	call the check_keypad sub-routine and then return
-	call display_digit			;	call the display_digit routine and then return
-	goto begin					;	go back to the beginning and do it all again.
-
+	; 0:'10111101'
+	; 1:'10100000'
+	; 2:'00111110'
+	; 3:'10101100'
+	; 4:'10101011'
+	; 5:'10011011'
+	; 6:'10111111'
+	; 7:'10110000'
+	; 8:'11111111'
+	; 9:'01110111'
 
 
 check_keypad:					;	This routine will scan the keypad for any key presses.
