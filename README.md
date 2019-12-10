@@ -37,8 +37,11 @@ fuck off im still doing the damn project
 if that doesn't work, google can be ur friend 
 
 ## write up
-*to be written*
-
+* [The current version of it is being written here](https://www.icloud.com/pages/04PooA6VNgQwprYUB_C_pMDpA#Electronics_courswork)
+* Can't see it? copy-paste this link 
+```
+https://www.icloud.com/pages/04PooA6VNgQwprYUB_C_pMDpA#Electronics_courswork
+```
 
 ## other
 probably gonna write a vscode running thingy for this so you might not have to copy paste the thingy in to the thingy for much longer lmao :pog_champ: amiright
