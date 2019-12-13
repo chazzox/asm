@@ -1,0 +1,77 @@
+//standart init loop
+
+function main(){
+    check_key()
+    display_key()
+}
+
+function check_key(){
+    for (i in range 0,2) {
+        for (j in range 3,5) {
+            set PORTA,i high
+            if (PORTA,j==high){
+                if (chapress == d'0'){
+                    set chapress =1
+                    move (i*3)+j to the working register
+                    move the working register to char1
+                }
+                else{
+                    move (i*3)+j to the working register
+                    move the working register to char2
+                }
+                
+            }
+            set PORTA,i low
+        }
+    }
+    // if '-' symbol pressed
+    if (PORTA,6==high){
+        move 11 to the working register
+    }
+    // if '-' symbol pressed
+    if (PORTA,7==high){
+        move 12 to the working register
+    }
+    if (PORTA,8==high){
+        clear()
+    }
+    if (PORTB,1==high){
+        calculate()
+    }
+}
+
+function display_key(){
+    if(woring register==11) or (woring register==12){
+        if(woring register==11){
+            mov 'binary out number for +' to PORTB
+        }
+        if(woring register==12){
+            mov 'binary out number for -' to PORTB
+        }
+    }
+    else{
+        for (z in range(0,9)){
+            if (working register ==2){
+                move 'binary out number for working number reg' 
+            }
+        }
+    }
+}
+
+function clear(){
+    clear all registers
+    run init() //as the program runs in a linear fashion the it will return to main aftern completing the init function
+}
+
+function display_res(){
+    mov result to the working register
+    convert the working resiter to number for LEDs
+    mov new result to PORTB
+    mov 'binary out number for +' to PORTB
+    mov 'binary out number for -' to PORTB
+}
+
+function calculate(){
+    result = char1+char2
+    display_res()
+}
