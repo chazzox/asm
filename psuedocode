@@ -1,4 +1,18 @@
 //standart init loop
+function init(){
+    set what_button = B1 register
+    set char1press = B2 register 
+    set char1 = B3 register 
+    set char2 = B4 register 
+    set temp = B5 register
+
+    select memory bank 1
+    configure output/input pins for PORTA & PORTB
+    select memory bank 0
+    let what_button = 0
+    let PORTA = 0x00000000
+}
+
 
 function main(){
     check_key()
@@ -60,7 +74,7 @@ function display_key(){
 
 function clear(){
     clear all registers
-    run init() //as the program runs in a linear fashion the it will return to main aftern completing the init function
+    run init() //as the program runs in a linear fashion the it will return to main after completing the init function
 }
 
 function display_res(){
