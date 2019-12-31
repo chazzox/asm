@@ -47,7 +47,7 @@ https://www.icloud.com/pages/04PooA6VNgQwprYUB_C_pMDpA#Electronics_courswork
 probably gonna write a vscode running thingy for this so you might not have to copy paste the thingy in to the thingy for much longer lmao :pog_champ: amiright
 
 
-## Acknowledgments
+## acknowledgments
 
 * cheers to bradsprojects whose code got me inspired to do this for my coursework
 * [you can find his website here](https://bradsprojects.com/)
