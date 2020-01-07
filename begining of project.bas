@@ -5,6 +5,7 @@ init:
 	char1 equ b3
 	char2 equ b4
 	temp equ b5
+    digit_counter equ b6
 	movlw b'00000000' 			;	set PORTB all outputs (A '0' means output, A '1' means input. We can set each
 	movwf TRISB					;	We can set each bit individualy. Each port having 8-bits or 8 pins.
 	movlw b'11111000' 			;	set PORTA pins 0, 1, and 2 outputs. pins 3, 4, 5, 6 and 7 inputs
@@ -21,7 +22,6 @@ begin:
 check_keypad:					;	This routine will scan the keypad for any key presses.
 
 	movf what_button, w		; moving last button preseed into working register in case no button is pressed during in this scan
-
 	; sanning through keypad matrix
 	bsf PORTA, 0			;	lets scan the first column of keys		
 		btfsc PORTA, 3			;	has the 1 key been pressed? if yes then
@@ -31,7 +31,6 @@ check_keypad:					;	This routine will scan the keypad for any key presses.
 		btfsc PORTA, 5			;	has the 7 key been pressed? if yes then
 		movlw d'07'				;	copy decimal number 07 into w. but if not then continue on.				;	copy decimal number 10 into w. but if not then continue on.
 	bcf PORTA, 0			;	now we have finished scanning the first column of keys
-
 	bsf PORTA, 1			;	lets scan the middle column of keys
 		btfsc PORTA, 3			;	has the 2 key been pressed? if yes then
 		movlw d'02'				;	copy decimal number 02 into w. but if not then continue on.
@@ -40,7 +39,6 @@ check_keypad:					;	This routine will scan the keypad for any key presses.
 		btfsc PORTA, 5			;	has the 8 key been pressed? if yes then
 		movlw d'08'				;	copy decimal number 08 into w. but if not then continue on.				;	copy decimal number 00 into w. but if not then continue on.
 	bcf PORTA, 1			;	now we have finished scanning the middle column of keys
-
 	bsf PORTA, 2			;	lets scan the last column of keys
 		btfsc PORTA, 3			;	has the 3 key been pressed? if yes then
 		movlw d'03'				;	copy decimal number 03 into w. but if not then continue on.
@@ -95,6 +93,17 @@ digit_data:
 		btfsc  STATUS,C 
 		movwf PORTB	
 	movf what_button, w
+
+digit_data2:
+    movwf digit_counter
+    incf digit_counter
+    subwf temp, digit_counter
+        btfsc  STATUS,C
+        movlw b'10111101'
+		btfsc  STATUS,C
+		movwf PORTB	
+
+
 
 
 ; procedure that displays out button that was pressed 
