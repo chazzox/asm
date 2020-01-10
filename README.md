@@ -10,7 +10,7 @@ im making a calculator, thats it
 ## how to run
 assuming you have some basic knowledge terminal you can either:
 
-### terminal version
+### chad terminal version
 First cd to the project directory, assuming you have alread extracted it if downloaded as a .zip
 run this command just to check the syntax 
 
