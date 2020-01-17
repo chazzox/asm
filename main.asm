@@ -6,28 +6,46 @@ initialization:
         movlw b'11111000' 			;	set PORTA pins 0, 1, and 2 outputs. pins 3, 4, 5, 6 and 7 inputs
 	    movwf TRISA 				;	remember PORTA pin 5 cannot be an input.
 	bcf STATUS, RP0 			;	select bank 0
-;   now we are defining our registers as easy to read/understand text
 	clrf PORTA
 	clrf PORTB
+	;   now we are defining our registers as easy to read/understand text
 	workingReg equ h'00'
     buttonPressCounter equ b0
     mode equ b1
     digit1 equ b2
     digit equ b3
 	tempButtonStore equ b4
-	ledNum equ b5
+	result equ b5
+	
+	ledNum equ b6
+	clrf working
 
+	; this is the constant definition section, here we difine numbers for writing
+	; to the led as well as move some numbers into the registers i just simplified 
+	movlw b'00000000'
+	movwf result
+	; led pin out numbers, usefull for easier to read code when debugging, can be removed if momeory optimisations are needed 
+	led0 equ b'11011101'  
+	led1 equ b'00000101'  
+	led2 equ b''  
+	led3 equ b'10101101'  
+	led4 equ b'00110101'  
+	led5 equ b'10111001'  
+	led6 equ b'11110001'  
+	led7 equ b'00001101'  
+	led8 equ b'11111101' 
+	led9 equ b'00111101'  
+	dpr equ  b'00000010' 
+; this the main function, erverything works through here and everything will eventually loop back to here
 main:
 	call getPress
-	call validatePress
 	
 getPress:
 	call getMode
 	movlw buttonPressCounter
 	sublw d'01'
 	btfsc  STATUS,C
-	call getNum
-	
+	call getNum	
 return						;	returns to the sub that called this routine 
 
 getNum:
@@ -37,7 +55,7 @@ getNum:
 		btfsc PORTA, 4			;	has the 4 key been pressed? if yes then
 			movlw d'04'				;	copy decimal number 04 into w. but if not then continue on.
 		btfsc PORTA, 5			;	has the 7 key been pressed? if yes then
-			movlw d'07'				;	copy decimal number 07 into w. but if not then continue on.		
+			movlw d'07'			;	copy decimal number 07 into w. but if not then continue on.		
 	bcf PORTA, 0				;	now we have finished scanning the first column of keys
 
 	bsf PORTA, 1				;	lets scan the middle column of keys
@@ -62,40 +80,93 @@ getNum:
 return
 
 getMode:
-	bsf PORTA, 3			;	lets scan the outer column
+	bsf PORTA, 3			;	scanning the column mode of keys 
 			btfsc PORTA, 3			;	has the mode key been pressed? if yes then
 				movlw d'10'				;	copy decimal number 03 into w. but if not then continue on.
-			btfsc PORTA, 3			;	has the mode key been pressed? if yes then
-				call buttonPressCounterEvent
-			
 			btfsc PORTA, 4			;	has the 6 key been pressed? if yes then
 				movlw d'11'				;	copy decimal number 06 into w. but if not then continue on.
-			btfsc PORTA, 4			;	has the mode key been pressed? if yes then
-				call buttonPressCounterEvent
-	bcf PORTA, 2			;	now we have finished scanning the last column of keys
+	bcf PORTA, 3			;	as the scanninig of mode keys has finished, changing pinOut to logic b'0'
 	movwf mode
 	clrf workingReg
+	call displayMode 
 return
 
-buttonPressCounterEvent:
-	movlw d'1'
-	addwf buttonPressCounter
-return
-
-validatePress:
-	
-return
-	
-
-
-displayNum:
+display:
 	movlw mode
-	addlw ledNum
-	; if bigger 10
-	movwf PORTB
+	addlw result
+	movlw result 
+	sublw d'10'
+	clrf workingReg
+	btfsc  STATUS,C
+	call display2dig 				; if the numebr is bigger than 9, than we will need to display 1 digit after the other 
+	call display1dig				; else, call the display
+
+displayDig:
+	movlw result
+	sublw d'01' 					; is the result == 0 
+	btfsc  STATUS,C
+		movwf led0
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'02' 					; is the result == 1
+	btfsc  STATUS,C
+		movwf led1
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'03' 					; is the result == 2 
+	btfsc  STATUS,C
+		movwf led2
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'04' 					; is the result == 3 
+	btfsc  STATUS,C
+		movwf led3
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'05' 					; is the result == 4 
+	btfsc  STATUS,C
+		movwf led4
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'06' 					; is the result == 5
+	btfsc  STATUS,C
+		movwf led5
+	btfsc  STATUS,C
+	return 
+	movlw result
+	sublw d'07' 					; is the result == 6 
+	btfsc  STATUS,C
+		movwf led6
+	btfsc  STATUS,C
+	return 
+	sublw d'08' 					; is the result == 7 
+	btfsc  STATUS,C
+		movwf led7
+	btfsc  STATUS,C
+	return 
+	sublw d'09' 					; is the result == 8 
+	btfsc  STATUS,C
+		movwf led8
+	btfsc  STATUS,C
+	return 	
+	sublw d'10' 					; is the result == 8 
+	btfsc  STATUS,C
+		movwf led9
+	btfsc  STATUS,C
+	return 	clrf 
+	
+
 return
+
+display2dig:
 
 calculate:
+
 
 addSub:
 
