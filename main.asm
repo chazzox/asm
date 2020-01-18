@@ -8,9 +8,8 @@ initialization:
 	bcf STATUS, RP0 				;	select bank 0
 	clrf PORTA
 	clrf PORTB
-	;   now we are defining our registers as easy to read/understand text
-	workingReg equ h'00'
-    buttonPressCounter equ b0
+	; now we are defining our registers as easy to read/understand text
+    displayLiteralgf equ b0
     mode equ b1
     digit1 equ b2
     digit equ b3
@@ -36,6 +35,7 @@ initialization:
 	led8 equ b'11111101' 
 	led9 equ b'00111101'  
 	dpr equ  b'00000010' 
+
 ; this the main function, erverything works through here and everything will eventually loop back to here
 main:
 	call getPress
@@ -96,7 +96,10 @@ display:
 	clrw
 	btfsc  STATUS,C
 	call displayDig				; if the numebr is smaller than 9, it will need the two digit display function to run
-	call display2dig 				; 
+	call display2dig 			; 
+	movf displayLiteral,1
+	movwf PORTA
+
 
 displayDig:
 	movf result,1
@@ -163,16 +166,17 @@ displayDig:
 		return 
 	
 	movf result,1	
-	sublw d'10' 					; is the result == 8 
+	sublw d'10' 					; is the result == 8 s
 	btfsc  STATUS,C
 		movlw led9
 	btfsc  STATUS,C
 		return 	
-
 return
 
 
 display2dig:
+	movlw led0
+	movwf PORTB
 
 calculate:
 
