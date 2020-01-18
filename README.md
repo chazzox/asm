@@ -44,8 +44,8 @@ https://www.icloud.com/pages/04PooA6VNgQwprYUB_C_pMDpA#Electronics_courswork
 ```
 
 ## other
-probably gonna write a vscode running thingy for this so you might not have to copy paste the thingy in to the thingy for much longer lmao :pog_champ: amiright
-
+- probably gonna write a vscode running thingy for this so you might not have to copy paste the thingy in to the thingy for much longer lmao :pog_champ: amiright
+- i have done, you may download the repo, open the extracted folder in vs code and press ctrl+shift+b to test compile
 
 ## acknowledgments
 

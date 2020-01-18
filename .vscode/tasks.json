@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Client Build",
+            "type": "process",
+            "windows": {
+                "command": ".\\compiler.exe",
+                "args": [
+                    "-s",
+                    "main.asm"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
