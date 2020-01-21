@@ -9,18 +9,19 @@ initialization:
 	clrf PORTA
 	clrf PORTB
 	; now we are defining our registers as easy to read/understand text
-    displayLiteral equ b0
+    displayNum equ b0
     mode equ b1
-    digit1 equ b2
-    digit equ b3
-	tempButtonStore equ b4
-	result equ b5	
+	BCDconverted equ b2
+	digit1 equ b3
+	digit2 equ b4
+	latestPress equ b5
+	inputCounter equ b6
+	FLAG_REG equ b7
+	nonBCD equ b8
 	clrw 
 
 	; this is the constant definition section, here we difine numbers for writing
 	; to the led as well as move some numbers into the registers i just simplified 
-	movlw b'00000000'
-	movwf result
 	; led pin out numbers, usefull for easier to read code when debugging
 	; can be removed if momeory optimisations are needed 
 	led0 equ b'11011101'
@@ -35,186 +36,210 @@ initialization:
 	led9 equ b'00111101'
 	dpr equ  b'00000010'
 
-; this the main function, erverything works through here and everything will eventually loop back to here
 main:
-	call getPress
-	call validatePress
-	movf mode,0
-	sublw d'03'
-	btfsc  STATUS,C
-	call calculate
+    call getPress
+	bsf PORTA, 3						; scanning the column mode of keys 
+			btfsc PORTA, 5				; has the mode key been pressed? if yes then
+				call calculate
+	bcf PORTA, 3
+
 getPress:
+	call getNum
 	call getMode
-	call getNum	
+	
 return									; returns to the sub that called this routine 
 
-getNum:
+getNum:                                 ; scans the number rows
 	clrw
 	bsf PORTA, 0						; lets scan the first column of keys		
-		btfsc PORTA, 3					; has the 1 key been pressed? if yes then
-			movlw d'01'					; copy decimal number 01 into w. but if not then continue on.
-		btfsc PORTA, 4					; has the 4 key been pressed? if yes then
-			movlw d'04'					; copy decimal number 04 into w. but if not then continue on.
-		btfsc PORTA, 5					; has the 7 key been pressed? if yes then
-			movlw d'07'					; copy decimal number 07 into w. but if not then continue on.		
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			movlw d'1'					; copy decimal number 01 into w. but if not then continue on.
+		
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			movlw d'4'					; copy decimal number 04 into w. but if not then continue on.
+
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			movlw d'7'					; copy decimal number 07 into w. but if not then continue on.		
 	bcf PORTA, 0						; now we have finished scanning the first column of keys
 
 	bsf PORTA, 1						; lets scan the middle column of keys
-		btfsc PORTA, 3					; has the 2 key been pressed? if yes then
-			movlw d'02'					; copy decimal number 02 into w. but if not then continue on.
-		btfsc PORTA, 4					; has the 5 key been pressed? if yes then
-			movlw d'05'					; copy decimal number 05 into w. but if not then continue on
-		btfsc PORTA, 5					; has the 8 key been pressed? if yes then
-			movlw d'08'					; copy decimal number 08 into w. but if not then continue on.
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			movlw d'1'					; copy decimal number 01 into w. but if not then continue on.
+		
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			movlw d'4'					; copy decimal number 04 into w. but if not then continue on.
+
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			movlw d'7'					; copy decimal number 07 into w. but if not then continue on.		
 	bcf PORTA, 1						; now we have finished scanning the middle column of key
 
 	bsf PORTA, 2						; lets scan the third column of keys
-		btfsc PORTA, 3					; has the 3 key been pressed? if yes then
-			movlw d'03'					; copy decimal number 03 into w. but if not then continue on.
-		btfsc PORTA, 4					; has the 6 key been pressed? if yes then
-			movlw d'06'					; copy decimal number 06 into w. but if not then continue on.
-		btfsc PORTA, 5					; has the 9 key been pressed? if yes then
-			movlw d'09'					; copy decimal number 09 into w. but if not then continue on.
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			movlw d'1'					; copy decimal number 01 into w. but if not then continue on.
+		
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			movlw d'4'					; copy decimal number 04 into w. but if not then continue on.
+
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			movlw d'7'					; copy decimal number 07 into w. but if not then continue on.		
 	bcf PORTA, 2						; now we have finished scanning the third column of keys
-	movwf displayNum
-	
+
+	bsf PORTA, 3						; lets scan the third column of keys
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 4					; has the 1 key been pressed? if yes then
+			movlw d'1'					; copy decimal number 01 into w. but if not then continue on.
+		
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 5					; has the 4 key been pressed? if yes then
+			movlw d'4'					; copy decimal number 04 into w. but if not then continue on.
+
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			incf inputCounter,1
+		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
+			movlw d'7'					; copy decimal number 07 into w. but if not then continue on.		
+	bcf PORTA, 3						; now we have finished scanning the third column of keys
+`	movwf latestPress
+	call storeNumber
+	call displayPress
 return
+
+
 
 getMode:
 	movlw d'10' 						; our default mode is + however, this will be overwitten if the mode key is pressed wihin the clock
 	bsf PORTA, 3						; scanning the column mode of keys 
-			btfsc PORTA, 3				; has the mode key been pressed? if yes then
-				movlw d'10'				; has the + key been pressed 
-			btfsc PORTA, 4				; has the 6 key been pressed? if yes then
-				movlw d'11'				; copy decimal number 06 into w. but if not then continue on.
+			btfsc PORTA, 5				; has the mode key been pressed? if yes then
+				movlw d'1'				; has the + key been pressed 
+			btfsc PORTA, 6				; has the 6 key been pressed? if yes then
+				movlw d'2'				; copy decimal number 06 into w. but if not then continue on.
 	bcf PORTA, 3						; as the scanninig of mode keys has finished, changing pinOut to logic b'0'
 	movwf mode
 	clrw
 return
 
-displayCalc:
-	movf mode,0
-	addwf result,0
-	sublw d'10'
+displayPress:
+	movf latestPress,0
+	movwf nonBCD
 	clrw
-	btfsc  STATUS,C
-	call displayDig						; if the numebr is smaller than 9, it will need the two digit display function to run
-	call display2dig 				 
-	movf displayLiteral,0
-	movwf PORTA
-return
+	call BCDconveter
+	call display
+return 
 
-
-bcdEncoder:
-	movf displayNum,0
-	sublw d'01' 						; is the result == 0 
+BCDconveter:
+    movf nonBCD,0
+	sublw d'1' 						; is the result == 0 
 	btfsc  STATUS,C
 		movlw led0
 	btfsc  STATUS,C
-		call displayNum 
-	btfsc  STATUS,C
-		return
+		movwf BCDconverted btfsc  STATUS,C return
 
-	movf result,0
-	sublw d'02' 						; is the result == 1
+	movf nonBCD,0
+	sublw d'2' 						; is the result == 1
 	btfsc  STATUS,C
 		movlw led1
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
-	sublw d'03' 						; is the result == 2 
+	movf nonBCD,0
+	sublw d'3' 						; is the result == 2 
 	btfsc  STATUS,C
 		movlw led2
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 			return
 
-	movf result,0
-	sublw d'04' 						; is the result == 3 
+	movf nonBCD,0
+	sublw d'4' 						; is the result == 3 
 	btfsc  STATUS,C
 		movlw led3
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
-	sublw d'05' 						; is the result == 4 
+	movf nonBCD,0
+	sublw d'5' 						; is the result == 4 
 	btfsc  STATUS,C
 		movlw led4
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
-	sublw d'06' 						; is the result == 5
+	movf nonBCD,0
+	sublw d'6' 						; is the result == 5
 	btfsc  STATUS,C
 		movlw led5
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
-	sublw d'07' 						; is the result == 6 
+	movf nonBCD,0
+	sublw d'7' 						; is the result == 6 
 	btfsc  STATUS,C
 		movlw led6
 	btfsc  STATUS,C
-		call displayNum
+		movwf BCDconverted
 	btfsc  STATUS,C
 		return
 
-	movf result,0 
-	sublw d'08' 						; is the result == 7 
+	movf nonBCD,0 
+	sublw d'8' 						; is the result == 7 
 	btfsc  STATUS,C
 		movlw led7
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
-	sublw d'09' 						; is the result == 8 
+	movf nonBCD,0
+	sublw d'9' 						; is the result == 8 
 	btfsc  STATUS,C
 		movlw led8
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0	
+	movf nonBCD,0	
 	sublw d'10' 						; is the result == 9
 	btfsc  STATUS,C
 		movlw led9
 	btfsc  STATUS,C
-		call displayNum 	
+		movwf BCDconverted 	
 	btfsc  STATUS,C
 		return
 return
 
-displayNum:
-	movwf PORTB
-return 
+display:
+    movf BCDconverted,0
+    movwf PORTB
+return
 
-display2dig:
-	movlw led0
-	movwf PORTB
-	call wait1000ms
-	movlw led0
-	movwf PORTB
 
 calculate:
-
-
-addSub:
-
-minusSub:
-
-error:
-
-clearSub:
+	nop
