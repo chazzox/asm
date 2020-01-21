@@ -9,12 +9,10 @@ initialization:
 	clrf PORTA
 	clrf PORTB
 	; now we are defining our registers as easy to read/understand text
-    displayLiteral equ b0
+    displayNum equ b0
     mode equ b1
-    digit1 equ b2
-    digit equ b3
 	tempButtonStore equ b4
-	result equ b5	
+	BCDconverted equ b5	
 	clrw 
 
 	; this is the constant definition section, here we difine numbers for writing
@@ -35,21 +33,21 @@ initialization:
 	led9 equ b'00111101'
 	dpr equ  b'00000010'
 
-; this the main function, erverything works through here and everything will eventually loop back to here
 main:
-	call getPress
-	call validatePress
-	movf mode,0
-	sublw d'03'
-	btfsc  STATUS,C
-	call calculate
+    call getPress
+    call validate
+
 getPress:
 	call getMode
-	call getNum	
+	call getNum
+	btfss 
+	btfsc 	
+	call displayNum
 return									; returns to the sub that called this routine 
 
-getNum:
+getNum:                                 ; scans the number rows
 	clrw
+    movlw d'00'
 	bsf PORTA, 0						; lets scan the first column of keys		
 		btfsc PORTA, 3					; has the 1 key been pressed? if yes then
 			movlw d'01'					; copy decimal number 01 into w. but if not then continue on.
@@ -92,129 +90,98 @@ getMode:
 	clrw
 return
 
-displayCalc:
-	movf mode,0
-	addwf result,0
-	sublw d'10'
-	clrw
-	btfsc  STATUS,C
-	call displayDig						; if the numebr is smaller than 9, it will need the two digit display function to run
-	call display2dig 				 
-	movf displayLiteral,0
-	movwf PORTA
-return
 
-
-bcdEncoder:
-	movf displayNum,0
+BCDconveter:
+    movf nonBCD,0
 	sublw d'01' 						; is the result == 0 
 	btfsc  STATUS,C
 		movlw led0
 	btfsc  STATUS,C
-		call displayNum 
-	btfsc  STATUS,C
-		return
+		movwf BCDconverted btfsc  STATUS,C return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'02' 						; is the result == 1
 	btfsc  STATUS,C
 		movlw led1
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'03' 						; is the result == 2 
 	btfsc  STATUS,C
 		movlw led2
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 			return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'04' 						; is the result == 3 
 	btfsc  STATUS,C
 		movlw led3
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'05' 						; is the result == 4 
 	btfsc  STATUS,C
 		movlw led4
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'06' 						; is the result == 5
 	btfsc  STATUS,C
 		movlw led5
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'07' 						; is the result == 6 
 	btfsc  STATUS,C
 		movlw led6
 	btfsc  STATUS,C
-		call displayNum
+		movwf BCDconverted
 	btfsc  STATUS,C
 		return
 
-	movf result,0 
+	movf nonBCD,0 
 	sublw d'08' 						; is the result == 7 
 	btfsc  STATUS,C
 		movlw led7
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0
+	movf nonBCD,0
 	sublw d'09' 						; is the result == 8 
 	btfsc  STATUS,C
 		movlw led8
 	btfsc  STATUS,C
-		call displayNum 
+		movwf BCDconverted 
 	btfsc  STATUS,C
 		return
 
-	movf result,0	
+	movf nonBCD,0	
 	sublw d'10' 						; is the result == 9
 	btfsc  STATUS,C
 		movlw led9
 	btfsc  STATUS,C
-		call displayNum 	
+		movwf BCDconverted 	
 	btfsc  STATUS,C
 		return
 return
 
-displayNum:
-	movwf PORTB
-return 
-
-display2dig:
-	movlw led0
-	movwf PORTB
-	call wait1000ms
-	movlw led0
-	movwf PORTB
-
-calculate:
-
-
-addSub:
-
-minusSub:
-
-error:
-
-clearSub:
+display:
+    movf BCDconverted,0
+    movwf PORTB
+    return
