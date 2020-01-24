@@ -6,7 +6,7 @@
 			"type": "process",
 			"windows": {
 				"command": ".\\compiler.exe",
-				"args": ["-s", "main2.asm"]
+				"args": ["-s", "${file}"]
 			},
 			"group": {
 				"kind": "build",
