@@ -35,6 +35,7 @@ initialization:
 	led8 equ b'11111101'
 	led9 equ b'00111101'
 	dpr equ  b'00000010'
+	errorCode equ b'10001000'
 
 main:
     call getPress
@@ -42,6 +43,7 @@ main:
 			btfsc PORTA, 5				; has the mode key been pressed? if yes then
 				call calculate
 	bcf PORTA, 3
+call main
 
 getPress:
 	call getNum
@@ -118,12 +120,21 @@ getNum:                                 ; scans the number rows
 		btfsc PORTA, 6					; has the 7 key been pressed? if yes then
 			movlw d'7'					; copy decimal number 07 into w. but if not then continue on.		
 	bcf PORTA, 3						; now we have finished scanning the third column of keys
-`	movwf latestPress
-	call storeNumber
+	movwf latestPress
+	call storeNum
 	call displayPress
 return
 
-
+storeNum:
+	btfss inputCounter,7
+		movf inputCounter,0
+	btfss inputCounter,7
+		movwf digit1
+	btfss inputCounter,7
+		movf inputCounter,0
+	btfsc inputCounter,7
+		movwf digit2
+return 
 
 getMode:
 	movlw d'10' 						; our default mode is + however, this will be overwitten if the mode key is pressed wihin the clock
@@ -151,7 +162,9 @@ BCDconveter:
 	btfsc  STATUS,C
 		movlw led0
 	btfsc  STATUS,C
-		movwf BCDconverted btfsc  STATUS,C return
+		movwf BCDconverted 
+	btfsc  STATUS,C return
+
 
 	movf nonBCD,0
 	sublw d'2' 						; is the result == 1
@@ -242,4 +255,32 @@ return
 
 
 calculate:
-	nop
+	movlw b'00001010'
+	movwf PORTB
+	call wait1ms
+	btfss mode,1
+		call add
+	btfsc mode,1
+		call sub
+return
+
+add:
+	movf digit1,0
+	addwf digit2,0
+	movwf nonBCD
+	call BCDconveter
+	call display
+return
+
+sub:
+	movf digit1,0
+	subwf digit2,0
+	movwf nonBCD
+	call BCDconveter
+	call display
+return
+
+
+clearALL:
+	clrf PORTB
+	clrf PORTA 
