@@ -1,3 +1,4 @@
+this project was not completed due to the covid-19 pandemic 
 # asm
 this repo is for my assembler projects, it's likely this repo will eventually become unused and dead and 
 at that point i'll probably just achieve it.
