@@ -20,14 +20,6 @@ run this command just to check the syntax
 ```
 change this link to the directory of where you have installed picaxe6, as far as im aware you can use the other compilers as im not using the built in wait functions in their version of MPASM
 
-if it returns no erros then follow the follwoing instructions to get to work
-
-```
-fuck off im still doing the damn project
-```
-
-
-
 ### peasant version
 
 * open picaxe6 editor
